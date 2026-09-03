@@ -308,7 +308,6 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-slate-600 dark:text-zinc-400 mb-1.5">Data</label>
-                                    <!-- A cor do calendário nativo adapta via color-scheme no tailwind class="dark:..." -->
                                     <input type="date" id="tx-date" required class="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500 transition-all [color-scheme:light] dark:[color-scheme:dark]">
                                 </div>
                             </div>
@@ -615,12 +614,23 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'financas-th-default';
-        let firebaseConfig = {};
-        try { firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {}; } catch(e) {}
+        // =========================================================================
+        // AQUI ESTÃO AS SUAS CHAVES DO FIREBASE! 
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDoTdSs5Ya9p3XFqlFuDqyNGXyFCWy4dCM",
+            authDomain: "financasth-b15f4.firebaseapp.com",
+            projectId: "financasth-b15f4",
+            storageBucket: "financasth-b15f4.firebasestorage.app",
+            messagingSenderId: "1048879713873",
+            appId: "1:1048879713873:web:628aa3e280c6cd1d9c7270"
+        };
+        // =========================================================================
+
+        const appId = "financas-th"; // Identificador fixo do seu app
         
         let app, db, auth, currentUser = null;
         try {
@@ -786,20 +796,16 @@
         }
 
         async function initAuth() {
-            if (!auth) {
+            if (!auth || !firebaseConfig.apiKey || firebaseConfig.apiKey === "COLE_AQUI") {
                 document.getElementById('loading-overlay').classList.add('hidden');
-                return showToast('Servidor offline.', 'error');
+                return showToast('Servidor offline. Configure o Firebase no código.', 'error');
             }
             try {
-                if (typeof __initial_auth_token !== 'undefined') {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                await signInAnonymously(auth);
             } catch(e) {
                 console.error("Auth error:", e);
                 document.getElementById('loading-overlay').classList.add('hidden');
-                showToast('Falha de conexão', 'error');
+                showToast('Falha de conexão com o banco', 'error');
             }
         }
 
